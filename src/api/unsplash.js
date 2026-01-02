@@ -8,7 +8,7 @@ const unsplash = axios.create({
 });
 
 
-export const FetchImages = async ({ pageParam = 1 }) => {
+export const fetchImages = async ({ pageParam = 1 }) => {
     try {
         const res = await unsplash.get("/photos", {
             params: {

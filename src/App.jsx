@@ -1,11 +1,15 @@
+import GalleryGrid from "./components/Gallery/GalleryGrid"
 
 function App() {
  
 
   return (
-    <>
-      <h1 className="text-3xl font-bold">hiiiiiiiiiiiiiiiiiiiii</h1>
-    </>
+    <div  className="flex h-screen">
+          <div className="overflow-y-scroll border-r">
+            <GalleryGrid/>
+          </div>
+
+    </div>
   )
 }
 
