@@ -140,7 +140,7 @@ The focus was on correctness, clarity, and learning rather than visual complexit
 
 ---
 
-Deployed App:   
+Deployed App: https://rtgi.vercel.app   
 
 
 
