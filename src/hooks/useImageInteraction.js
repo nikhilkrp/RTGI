@@ -1,4 +1,5 @@
-import { db, id } from "@instantdb/react";
+import { id } from "@instantdb/react";
+import { db } from "../api/instantdb";
 import { useUserStore } from "../store/useUserStore";
 
 export const useImageInteractions = (imageId) => {
@@ -13,10 +14,13 @@ export const useImageInteractions = (imageId) => {
         comments: {
             $: {
                 where: { imageId },
-                order: { createdAt: "asc" },
+
             },
         },
-    });
+
+    },
+
+);
 
     const reactions = data?.reactions || [];
     const comments = data?.comments || [];
@@ -25,27 +29,36 @@ export const useImageInteractions = (imageId) => {
         (reaction) => reaction.userId === userId
     );
 
+const reactionCounts = reactions.reduce((acc, r) => {
+  acc[r.type] = (acc[r.type] || 0) + 1;
+  return acc;
+}, {});
+
+
     const likeCount = reactions.length;
 
-    const toggleLike = async () => {
-        const existingLike = reactions.find(
-            (reaction) => reaction.userId === userId
+    const toggleLike = async (reactionType = "heart") => {
+        const existingReaction = reactions.find(
+            (reaction) =>
+                reaction.userId === userId &&
+                reaction.type === reactionType
         );
 
-        if (existingLike) {
+        if (existingReaction) {
             await db.transact(
-                db.tx.reactions[existingLike.id].delete()
+                db.tx.reactions[existingReaction.id].delete()
             );
         } else {
             await db.transact([
                 db.tx.reactions[id()].update({
                     imageId,
                     userId,
-                    type: "heart",
+                    type: reactionType,
                     createdAt: Date.now(),
                 }),
                 db.tx.feed[id()].update({
                     type: "reaction",
+                    reactionType: reactionType,
                     imageId,
                     userId,
                     createdAt: Date.now(),
@@ -53,6 +66,7 @@ export const useImageInteractions = (imageId) => {
             ]);
         }
     };
+
 
     const addComment = async (text) => {
         if (!text.trim()) return;
@@ -75,6 +89,7 @@ export const useImageInteractions = (imageId) => {
 
     return {
         reactions,
+        reactionCounts,
         comments,
         likeCount,
         hasUserLiked,

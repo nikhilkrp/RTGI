@@ -1,11 +1,9 @@
-import { db } from "@instantdb/react";
+import { db } from "../api/instantdb";
 
 export const useFeed = () => {
   const { isLoading, error, data } = db.useQuery({
     feed: {
-      $: {
-        order: { createdAt: "desc" }, 
-      },
+      $: {},
     },
   });
 
